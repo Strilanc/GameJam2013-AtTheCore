@@ -19,8 +19,8 @@ public class Ship : MonoBehaviour {
         rigidBody.angularVelocity += transform.right * pitch;
         rigidBody.angularVelocity += transform.forward * roll;
 
-        var thrust = (Input.GetKey(KeyCode.Joystick1Button0) || Input.GetKey(KeyCode.Space)) ? 1 : 0;
-        rigidBody.velocity += transform.forward.normalized * 0.1f * thrust;
+        var thrust = Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0;
+        rigidBody.velocity += transform.forward.normalized * 1f * thrust;
         if (thrust != 0) {
             // rattle ship
             var v = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1))/500;

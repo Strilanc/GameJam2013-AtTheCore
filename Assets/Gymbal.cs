@@ -10,6 +10,6 @@ public class Gymbal : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        transform.rotation = Quaternion.Inverse(transform.parent.rotation);
+	    transform.rotation = Quaternion.identity; // Quaternion.Inverse(transform.parent.rotation);
 	}
 }
