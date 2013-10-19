@@ -1,8 +1,10 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using System.Collections;
 
 public class Ship : MonoBehaviour {
-    public double RotationSpeed;
+    public GameObject SpeedStreak;
+    private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
 	void Start () {
     }
 	
@@ -25,9 +27,26 @@ public class Ship : MonoBehaviour {
             transform.rotation *= Quaternion.FromToRotation(Vector3.forward, Vector3.forward + v);
         }
 
-        // rotation compensation
-	   /* var rotationSpeed = rigidBody.angularVelocity.magnitude;
+	    MakeSpeedStreak();
+
+	    // rotation compensation
+	    /* var rotationSpeed = rigidBody.angularVelocity.magnitude;
 	    var autoBrakingSpeed = Mathf.Max(rotationSpeed - 0.1f, 0)/5*Time.deltaTime;
 	    rigidBody.angularVelocity -= rigidBody.angularVelocity.normalized*autoBrakingSpeed;*/
 	}
+    void MakeSpeedStreak() {
+        foreach (var s in _speedStreak.ToArray()) {
+            if ((s.transform.position - transform.position).sqrMagnitude > 100 * 100) {
+                DestroyObject(s.gameObject);
+                _speedStreak.Remove(s);
+            }
+        }
+
+        while (_speedStreak.Count < 500) {
+            var r = transform.position + new Vector3(Random.Range(-1, 1f), Random.Range(-1, 1f), Random.Range(-1, 1f)) * 100;
+            var g = (GameObject)Instantiate(SpeedStreak, r, Quaternion.identity);
+            g.rigidbody.velocity = -g.transform.position.normalized;
+            _speedStreak.Add(g);
+        }
+    }
 }

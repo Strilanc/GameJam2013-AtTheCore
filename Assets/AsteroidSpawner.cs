@@ -12,11 +12,11 @@ public class AsteroidSpawner : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    nextSpawn -= Time.deltaTime;
+        //nextSpawn -= Time.deltaTime;
 
         while (nextSpawn < 0) {
             nextSpawn += Random.Range(0f, 5.0f);
-
+            
             var t1 = Random.Range(0f, 2 * Mathf.PI);
             var t2 = Random.Range(-Mathf.PI/2, Mathf.PI/2);
             var v1 = new Vector3(Mathf.Cos(t1)*Mathf.Cos(t2), Mathf.Sin(t1)*Mathf.Cos(t2), Mathf.Sin(t2))*100;
