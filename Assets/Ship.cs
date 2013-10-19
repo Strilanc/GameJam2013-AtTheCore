@@ -8,7 +8,7 @@ public class Ship : MonoBehaviour {
 	void Start () {
     }
 	
-	void Update () {
+	void FixedUpdate () {
 	    const float rotFactor = 0.5f;
         var yaw = Input.GetAxis("Horizontal") * Time.deltaTime * rotFactor;
         var pitch = Input.GetAxis("Vertical") * Time.deltaTime * rotFactor;
@@ -20,7 +20,6 @@ public class Ship : MonoBehaviour {
         rigidBody.angularVelocity += transform.forward * roll;
 
         var thrust = Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0;
-        Debug.Log(thrust+"");
         rigidBody.velocity += transform.forward.normalized * 1f * thrust;
         if (thrust != 0) {
             // rattle ship
