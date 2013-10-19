@@ -21,6 +21,9 @@ public class Ship : MonoBehaviour {
 
     public ParticleSystem EngineBottomForeward;
     public ParticleSystem EngineBottomBackward;
+	
+	public AudioSource audioSource;
+	public AudioSource engine;
 
     private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
 	void Start () {
@@ -38,7 +41,7 @@ public class Ship : MonoBehaviour {
 
         var inputLeftRightThrust = Input.GetAxis("LeftRightThrust");
         var inputUpDownThrust = Input.GetAxis("UpDownThrust");
-        var inputForwardBackThrust = Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0f;
+        var inputForwardBackThrust = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0f;
         var thrustVector = default(Vector3);
         thrustVector += transform.forward.normalized * inputForwardBackThrust;
         thrustVector += inputLeftRightThrust * -transform.right;
@@ -117,6 +120,7 @@ public class Ship : MonoBehaviour {
         var lambda = 1 - Mathf.Pow(0.1f, Time.deltaTime);
         Head.transform.position = Vector3.Lerp(Head.transform.position, t, lambda);
         Head.transform.rotation = Quaternion.Slerp(Head.transform.rotation, q, lambda);
+		engine.pitch = thrustVector.magnitude+0.5f;
     }
     private static Vector3 RestAtPoint(Vector3 position) {
         return -position.normalized*25;
@@ -139,4 +143,9 @@ public class Ship : MonoBehaviour {
             _speedStreak.Add(g);
         }
     }
+	
+	public void OnCollisonEnter(Collision other){
+		Debug.Log (other.collider.name);
+		audioSource.Play();
+	}
 }
