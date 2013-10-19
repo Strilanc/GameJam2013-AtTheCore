@@ -22,20 +22,23 @@ public class AsteroidSpawner : MonoBehaviour {
                 _asteroids.Remove(a);
             }
         }
-        while (nextSpawn < 0 && _asteroids.Count < 500) {
-            nextSpawn += Random.Range(0f, 1f);
+        while (nextSpawn < 0 && _asteroids.Count < 1000) {
+            nextSpawn += Random.Range(0f, 0.1f);
 
             Vector3 pos;
+            int i = 0;
             do {
                 var spawnDir = -Ship.transform.position.normalized;
                 var xx = Vector3.Cross(Vector3.up, spawnDir).normalized;
                 if (xx.magnitude < 0.001) xx = Vector3.Cross(Vector3.forward, spawnDir).normalized;
                 if (xx.magnitude < 0.001) xx = Vector3.Cross(Vector3.right, spawnDir).normalized;
-                var yy = Vector3.Cross(Vector3.up, xx).normalized;
+                var yy = Vector3.Cross(spawnDir, xx).normalized;
 
                 var v1 = spawnDir + xx*Random.Range(0f, 1f) + yy*Random.Range(0f, 1f);
                 pos = Ship.transform.position + v1.normalized*1000f;
-            } while (Physics.CheckSphere(pos, 1000));
+                i += 1;
+            } while (Physics.CheckSphere(pos, 200) && i < 10);
+            if (i == 10) continue;
             var x = (GameObject)Instantiate(ThingToInstantiate, pos, Quaternion.identity);
             var r = x.GetComponent<Rigidbody>();
             r.velocity = r.transform.position.normalized*5 + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));

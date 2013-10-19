@@ -5,7 +5,6 @@ using System.Collections;
 using Random = UnityEngine.Random;
 
 public class Ship : MonoBehaviour {
-    public GameObject SpeedStreak;
     public GameObject Head;
     public ParticleSystem EngineLeftDownward;
     public ParticleSystem EngineLeftUpward;
@@ -65,7 +64,6 @@ public class Ship : MonoBehaviour {
         MakeSpeedStreak();
 
         var useBrakes = Input.GetKey(KeyCode.Joystick1Button1);
-        var brakesPlus = useBrakes ? 100f : 0;
         const float enginePower = 50f;
         const float rotationalPower = 2f;
         var brakingFactor = useBrakes ? 1f : 0.5f;
@@ -129,25 +127,12 @@ public class Ship : MonoBehaviour {
 		engine.pitch = thrustVector.magnitude+0.5f;
     }
     private static Vector3 RestAtPoint(Vector3 position) {
-        return default(Vector3); // -position.normalized * 25;
+        return default(Vector3);
     }
     void MakeSpeedStreak() {
-        foreach (var s in _speedStreak.ToArray()) {
-            if ((s.transform.position - transform.position).sqrMagnitude > 100 * 100) {
-                DestroyObject(s.gameObject);
-                _speedStreak.Remove(s);
-            } else if (s.GetComponent<SpeedStreak>().life > 30) {
-                DestroyObject(s.gameObject);
-                _speedStreak.Remove(s);
-            }
-        }
-
-        while (_speedStreak.Count < 500) {
-            var r = transform.position + new Vector3(Random.Range(-1, 1f), Random.Range(-1, 1f), Random.Range(-1, 1f)) * 100;
-            var g = (GameObject)Instantiate(SpeedStreak, r, Quaternion.identity);
-            g.rigidbody.velocity = RestAtPoint(g.transform.position);
-            _speedStreak.Add(g);
-        }
+        this.GetComponent<ParticleSystem>().transform.position = this.transform.position;
+        this.GetComponent<ParticleSystem>().emissionRate = this.rigidbody.velocity.magnitude*25;
+        this.GetComponent<ParticleSystem>().startLifetime = Mathf.Clamp(this.rigidbody.velocity.magnitude, 0.01f, 1);
     }
 	
 	public void OnCollisonEnter(Collision other){
