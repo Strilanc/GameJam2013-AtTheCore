@@ -7,21 +7,22 @@ public class Ship : MonoBehaviour {
     }
 	
 	void Update () {
-        var yaw = Input.GetAxis("Horizontal") * Time.deltaTime * 1f;
-        var pitch = Input.GetAxis("Vertical") * Time.deltaTime * 1f;
-        var roll = Input.GetAxis("Roll") * 0.01f;
+	    const float rotFactor = 0.5f;
+        var yaw = Input.GetAxis("Horizontal") * Time.deltaTime * rotFactor;
+        var pitch = Input.GetAxis("Vertical") * Time.deltaTime * rotFactor;
+        var roll = Input.GetAxis("Roll") * Time.deltaTime * rotFactor;
 
-	    var thrust = Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0;
 	    var rigidBody = GetComponent<Rigidbody>();
-	    var a = rigidBody.angularVelocity;
+        rigidBody.angularVelocity += transform.up * yaw;
+        rigidBody.angularVelocity += transform.right * pitch;
+        rigidBody.angularVelocity += transform.forward * roll;
 
-        var p1 = transform.right;
-        var p2 = transform.up;
-        var p3 = transform.forward;
-        
-        rigidBody.velocity += transform.forward.normalized*0.1f*thrust;
-        rigidBody.angularVelocity += p2 * yaw;
-        rigidBody.angularVelocity += p1 * pitch;
-        rigidBody.angularVelocity += p3 * roll;
+        var thrust = Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0;
+        rigidBody.velocity += transform.forward.normalized * 0.1f * thrust;
+        if (thrust != 0) {
+            // rattle ship
+            var v = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1))/500;
+            transform.rotation *= Quaternion.FromToRotation(Vector3.forward, Vector3.forward + v);
+        }
 	}
 }
