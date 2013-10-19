@@ -37,7 +37,7 @@ public class Ship : MonoBehaviour {
 
         var inputLeftRightThrust = Input.GetAxis("LeftRightThrust");
         var inputUpDownThrust = Input.GetAxis("UpDownThrust");
-        var inputForwardBackThrust = Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0f;
+        var inputForwardBackThrust = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0f;
         var thrustVector = default(Vector3);
         thrustVector += transform.forward.normalized * inputForwardBackThrust;
         thrustVector += inputLeftRightThrust * -transform.right;
