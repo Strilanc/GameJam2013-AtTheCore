@@ -39,6 +39,9 @@ public class Ship : MonoBehaviour {
             if ((s.transform.position - transform.position).sqrMagnitude > 100 * 100) {
                 DestroyObject(s.gameObject);
                 _speedStreak.Remove(s);
+            } else if (s.GetComponent<SpeedStreak>().life > 30) {
+                DestroyObject(s.gameObject);
+                _speedStreak.Remove(s);
             }
         }
 
