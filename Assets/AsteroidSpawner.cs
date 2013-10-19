@@ -4,7 +4,7 @@ using System.Collections;
 
 public class AsteroidSpawner : MonoBehaviour {
     private float nextSpawn = 0.0f;
-    public GameObject ThingToInstantiate;
+    public List<GameObject> ThingToInstantiate;
     public Ship Ship;
     private readonly List<GameObject> _asteroids = new List<GameObject>(); 
 	// Use this for initialization
@@ -39,8 +39,10 @@ public class AsteroidSpawner : MonoBehaviour {
                 i += 1;
             } while (Physics.CheckSphere(pos, 200) && i < 10);
             if (i == 10) continue;
-            var x = (GameObject)Instantiate(ThingToInstantiate, pos, Quaternion.identity);
+            var t = Random.Range(0, ThingToInstantiate.Count);
+            var x = (GameObject)Instantiate(ThingToInstantiate[t], pos, Quaternion.identity);
             var r = x.GetComponent<Rigidbody>();
+            r.transform.localScale *= Random.Range(0.5f, 1.5f);
             r.velocity = r.transform.position.normalized*5 + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             r.angularVelocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             _asteroids.Add(x);

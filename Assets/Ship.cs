@@ -28,6 +28,7 @@ public class Ship : MonoBehaviour {
 
     private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
 	void Start () {
+	    this.rigidbody.inertiaTensor *= 5;
 		if(!OVRDevice.IsSensorPresent(0)){
 			occulusCam.SetActive(false);
 			normalCam.SetActive(true);
