@@ -24,5 +24,10 @@ public class Ship : MonoBehaviour {
             var v = new Vector3(Random.Range(-1, 1), Random.Range(-1, 1), Random.Range(-1, 1))/500;
             transform.rotation *= Quaternion.FromToRotation(Vector3.forward, Vector3.forward + v);
         }
+
+        // rotation compensation
+	    var rotationSpeed = rigidBody.angularVelocity.magnitude;
+	    var autoBrakingSpeed = Mathf.Max(rotationSpeed - 0.1f, 0)/5*Time.deltaTime;
+	    rigidBody.angularVelocity -= rigidBody.angularVelocity.normalized*autoBrakingSpeed;
 	}
 }
