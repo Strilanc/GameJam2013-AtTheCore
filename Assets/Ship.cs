@@ -39,13 +39,16 @@ public class Ship : MonoBehaviour {
             if ((s.transform.position - transform.position).sqrMagnitude > 100 * 100) {
                 DestroyObject(s.gameObject);
                 _speedStreak.Remove(s);
+            } else if (s.GetComponent<SpeedStreak>().life > 30) {
+                DestroyObject(s.gameObject);
+                _speedStreak.Remove(s);
             }
         }
 
         while (_speedStreak.Count < 500) {
             var r = transform.position + new Vector3(Random.Range(-1, 1f), Random.Range(-1, 1f), Random.Range(-1, 1f)) * 100;
             var g = (GameObject)Instantiate(SpeedStreak, r, Quaternion.identity);
-            g.rigidbody.velocity = -g.transform.position.normalized;
+            g.rigidbody.velocity = -g.transform.position.normalized*50;
             _speedStreak.Add(g);
         }
     }
