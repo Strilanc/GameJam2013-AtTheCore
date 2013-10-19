@@ -63,10 +63,10 @@ public class Ship : MonoBehaviour {
         const float enginePower = 50f;
         const float rotationalPower = 2f;
         var brakingFactor = useBrakes ? 1f : 0.5f;
-        var rotationalBrakingFactor = useBrakes ? 1f : 0.5f;
+        var rotationalBrakingFactor = useBrakes ? 0.9f : 0.5f;
 
         // rotation compensation
-        if (angularThrust.magnitude < 0.1) {
+        if (angularThrust.magnitude < 0.1 || useBrakes) {
             var glide = rigidBody.angularVelocity;
             var brakeThrustVector = -glide.normalized * rotationalBrakingFactor;
             var velocityAfterBraking = rigidBody.angularVelocity + brakeThrustVector * rotationalPower * Time.deltaTime;
@@ -76,7 +76,7 @@ public class Ship : MonoBehaviour {
         }
         rigidBody.angularVelocity += angularThrust*rotationalPower*Time.deltaTime;
 
-        if (thrustVector.magnitude < 0.1) {
+        if (thrustVector.magnitude < 0.1 || useBrakes) {
             var glide = rigidBody.velocity - RestAtPoint(transform.position);
             var brakeThrustVector = -glide.normalized * brakingFactor;
             var glideAfterBraking = glide + brakeThrustVector*enginePower*Time.deltaTime;
@@ -123,7 +123,7 @@ public class Ship : MonoBehaviour {
 		engine.pitch = thrustVector.magnitude+0.5f;
     }
     private static Vector3 RestAtPoint(Vector3 position) {
-        return -position.normalized*25;
+        return default(Vector3); // -position.normalized * 25;
     }
     void MakeSpeedStreak() {
         foreach (var s in _speedStreak.ToArray()) {
