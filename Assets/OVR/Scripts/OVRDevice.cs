@@ -205,9 +205,11 @@ public class OVRDevice : MonoBehaviour
 		InitOrientationSensorList();
 		
 		OVRInit = OVR_Initialize();
-	
-		if(OVRInit == false) 
+		
+		if(OVRInit == false) {
 			return;
+		}
+			
 
 		// * * * * * * *
 		// DISPLAY SETUP
