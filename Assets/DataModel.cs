@@ -19,7 +19,7 @@ public class DataModel : MonoBehaviour {
 	
 	
 	public void CreateWorld(int id){
-		GameObject obj = Instantiate(shipt);
+//		GameObject obj = Instantiate(shipt);
 		
 	}
 	
