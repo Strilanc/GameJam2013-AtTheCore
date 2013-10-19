@@ -24,9 +24,15 @@ public class Ship : MonoBehaviour {
 	
 	public AudioSource audioSource;
 	public AudioSource engine;
+	public GameObject normalCam;
+	public GameObject occulusCam;
 
     private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
 	void Start () {
+		if(!OVRDevice.IsSensorPresent(0)){
+			occulusCam.SetActive(false);
+			normalCam.SetActive(true);
+		}
     }
 
     void FixedUpdate() {
