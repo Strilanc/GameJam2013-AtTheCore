@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: e08bdf4217f6d4c6b8bb8cd2c1e51556
+guid: e461a2112245f4fa5bea030d884aaa6a
 ModelImporter:
   serializedVersion: 15
   fileIDToRecycleName:
@@ -23,6 +23,8 @@ ModelImporter:
     100034: spine
     100036: stickbase
     100038: stickmain
+    100040: Sun
+    100042: Sun_001
     400000: chest
     400002: Circle_002
     400004: cockpit
@@ -43,17 +45,18 @@ ModelImporter:
     400034: spine
     400036: stickbase
     400038: stickmain
+    400040: Sun
+    400042: Sun_001
     2300000: Circle_002
     3300000: Circle_002
     4300000: console
     4300002: cockpit
     4300004: Circle_002
-    7400000: Default Take
-    7400002: backward
-    7400004: bindpose
-    7400006: forward
-    7400008: left
-    7400010: right
+    7400000: backward
+    7400002: bindpose
+    7400004: forward
+    7400006: left
+    7400008: right
     9500000: //RootNode
     13700000: cockpit
     13700002: console
@@ -73,7 +76,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: .00999999978
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1
