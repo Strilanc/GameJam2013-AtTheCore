@@ -8,7 +8,7 @@ public class Ship : MonoBehaviour {
 	void Start () {
     }
 	
-	void Update () {
+	void FixedUpdate () {
 	    const float rotFactor = 0.5f;
         var yaw = Input.GetAxis("Horizontal") * Time.deltaTime * rotFactor;
         var pitch = Input.GetAxis("Vertical") * Time.deltaTime * rotFactor;
@@ -19,7 +19,7 @@ public class Ship : MonoBehaviour {
         rigidBody.angularVelocity += transform.right * pitch;
         rigidBody.angularVelocity += transform.forward * roll;
 
-        var thrust = Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0;
+        var thrust = (Input.GetKey(KeyCode.Joystick1Button0) || Input.GetKey(KeyCode.Space)) ? 1 : 0;
         rigidBody.velocity += transform.forward.normalized * 0.1f * thrust;
         if (thrust != 0) {
             // rattle ship
@@ -45,7 +45,7 @@ public class Ship : MonoBehaviour {
         while (_speedStreak.Count < 500) {
             var r = transform.position + new Vector3(Random.Range(-1, 1f), Random.Range(-1, 1f), Random.Range(-1, 1f)) * 100;
             var g = (GameObject)Instantiate(SpeedStreak, r, Quaternion.identity);
-            g.rigidbody.velocity = -g.transform.position.normalized;
+            g.rigidbody.velocity = -g.transform.position.normalized*50;
             _speedStreak.Add(g);
         }
     }
