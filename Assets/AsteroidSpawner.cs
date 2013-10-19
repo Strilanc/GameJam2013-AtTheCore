@@ -15,7 +15,7 @@ public class AsteroidSpawner : MonoBehaviour {
         nextSpawn -= Time.deltaTime;
 
         while (nextSpawn < 0) {
-            nextSpawn += Random.Range(0f, 0.1f);
+            nextSpawn += Random.Range(0f, 1f);
             
             var t1 = Random.Range(0f, 2 * Mathf.PI);
             var t2 = Random.Range(-Mathf.PI/2, Mathf.PI/2);

@@ -2,14 +2,10 @@
 using System.Collections;
 
 public class Gymbal : MonoBehaviour {
-
-	// Use this for initialization
 	void Start () {
 	
 	}
-	
-	// Update is called once per frame
 	void Update () {
-	    transform.rotation = Quaternion.identity; // Quaternion.Inverse(transform.parent.rotation);
+	    transform.rotation = Quaternion.identity;
 	}
 }
