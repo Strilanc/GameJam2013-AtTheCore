@@ -3,13 +3,7 @@ using System.Collections;
 
 public class SceneBuilder : MonoBehaviour {
 
-	// Use this for initialization
-	void Start () {
+	public AudioSource music;
 	
-	}
 	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 }

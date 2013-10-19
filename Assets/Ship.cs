@@ -20,6 +20,9 @@ public class Ship : MonoBehaviour {
 
     public ParticleSystem EngineBottomForeward;
     public ParticleSystem EngineBottomBackward;
+	
+	public AudioSource audioSource;
+	public AudioSource engine;
 
     private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
 	void Start () {
@@ -77,7 +80,6 @@ public class Ship : MonoBehaviour {
             var brakeThrustVector = -glide.normalized * brakingFactor;
             var glideAfterBraking = glide + brakeThrustVector*enginePower*Time.deltaTime;
             var overBraked = Vector3.Dot(glide, brakeThrustVector) * Vector3.Dot(glideAfterBraking, brakeThrustVector) < 0;
-            Debug.Log(""+overBraked);
             if (!overBraked) thrustVector += brakeThrustVector;
         }
         rigidBody.velocity += thrustVector * Time.deltaTime * enginePower;
@@ -111,6 +113,7 @@ public class Ship : MonoBehaviour {
         EngineLeftBackward.emissionRate = emissionRateForOutput(outputAngularThrustUpDown + outputThrustForwardBack);
         EngineRightForeward.emissionRate = emissionRateForOutput(outputAngularThrustUpDown - outputThrustForwardBack);
         EngineRightBackward.emissionRate = emissionRateForOutput(-outputAngularThrustUpDown + outputThrustForwardBack);
+		engine.pitch = thrustVector.magnitude+0.5f;
     }
     private static Vector3 RestAtPoint(Vector3 position) {
         return -position.normalized*25;
@@ -133,4 +136,9 @@ public class Ship : MonoBehaviour {
             _speedStreak.Add(g);
         }
     }
+	
+	public void OnCollisonEnter(Collision other){
+		Debug.Log (other.collider.name);
+		audioSource.Play();
+	}
 }
