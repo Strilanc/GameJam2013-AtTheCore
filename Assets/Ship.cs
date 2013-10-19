@@ -6,6 +6,7 @@ using Random = UnityEngine.Random;
 
 public class Ship : MonoBehaviour {
     public GameObject SpeedStreak;
+    public GameObject Head;
     public ParticleSystem EngineLeftDownward;
     public ParticleSystem EngineLeftUpward;
     public ParticleSystem EngineLeftLeftward;
@@ -77,7 +78,6 @@ public class Ship : MonoBehaviour {
             var brakeThrustVector = -glide.normalized * brakingFactor;
             var glideAfterBraking = glide + brakeThrustVector*enginePower*Time.deltaTime;
             var overBraked = Vector3.Dot(glide, brakeThrustVector) * Vector3.Dot(glideAfterBraking, brakeThrustVector) < 0;
-            Debug.Log(""+overBraked);
             if (!overBraked) thrustVector += brakeThrustVector;
         }
         rigidBody.velocity += thrustVector * Time.deltaTime * enginePower;
@@ -111,6 +111,12 @@ public class Ship : MonoBehaviour {
         EngineLeftBackward.emissionRate = emissionRateForOutput(outputAngularThrustUpDown + outputThrustForwardBack);
         EngineRightForeward.emissionRate = emissionRateForOutput(outputAngularThrustUpDown - outputThrustForwardBack);
         EngineRightBackward.emissionRate = emissionRateForOutput(-outputAngularThrustUpDown + outputThrustForwardBack);
+
+        var t = transform.position - thrustVector / 5;
+        var q = transform.rotation * Quaternion.AngleAxis(-angularThrust.magnitude * 10, angularThrust.normalized);
+        var lambda = 1 - Mathf.Pow(0.1f, Time.deltaTime);
+        Head.transform.position = Vector3.Lerp(Head.transform.position, t, lambda);
+        Head.transform.rotation = Quaternion.Slerp(Head.transform.rotation, q, lambda);
     }
     private static Vector3 RestAtPoint(Vector3 position) {
         return -position.normalized*25;

@@ -6,5 +6,7 @@ public class Asteroid : MonoBehaviour {
 	
 	void OnCollisionEnter(Collision other){
 		clack.Play();
+
+
 	}
 }
