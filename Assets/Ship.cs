@@ -75,10 +75,10 @@ public class Ship : MonoBehaviour {
         if (thrustVector.magnitude < 0.1) {
             var glide = rigidBody.velocity - RestAtPoint(transform.position);
             var brakeThrustVector = -glide.normalized * brakingFactor;
-            var velocityAfterBraking = rigidBody.velocity + brakeThrustVector*enginePower*Time.deltaTime;
-            var overBraked = Mathf.Sign(Vector3.Dot(rigidBody.velocity, brakeThrustVector)) != Mathf.Sign(Vector3.Dot(velocityAfterBraking, brakeThrustVector));
-            if (overBraked) brakeThrustVector = default(Vector3);
-            thrustVector += brakeThrustVector;
+            var glideAfterBraking = glide + brakeThrustVector*enginePower*Time.deltaTime;
+            var overBraked = Vector3.Dot(glide, brakeThrustVector) * Vector3.Dot(glideAfterBraking, brakeThrustVector) < 0;
+            Debug.Log(""+overBraked);
+            if (!overBraked) thrustVector += brakeThrustVector;
         }
         rigidBody.velocity += thrustVector * Time.deltaTime * enginePower;
 
@@ -93,7 +93,7 @@ public class Ship : MonoBehaviour {
         const float emissionFactor = 50;
 
         Func<float, float> emissionRateForOutput = output => {
-            if (output < 0.2) return 0;
+            if (output < 0) return 0;
             return Mathf.Clamp(output, 0, 1)*emissionFactor;
         };
         EngineLeftDownward.emissionRate = emissionRateForOutput(-outputAngularThrustForwardBack + outputThrustUpDown);
@@ -113,7 +113,6 @@ public class Ship : MonoBehaviour {
         EngineRightBackward.emissionRate = emissionRateForOutput(-outputAngularThrustUpDown + outputThrustForwardBack);
     }
     private static Vector3 RestAtPoint(Vector3 position) {
-        return default(Vector3);
         return -position.normalized*25;
     }
     void MakeSpeedStreak() {
