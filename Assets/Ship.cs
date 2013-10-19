@@ -26,8 +26,8 @@ public class Ship : MonoBehaviour {
         }
 
         // rotation compensation
-	    var rotationSpeed = rigidBody.angularVelocity.magnitude;
+	   /* var rotationSpeed = rigidBody.angularVelocity.magnitude;
 	    var autoBrakingSpeed = Mathf.Max(rotationSpeed - 0.1f, 0)/5*Time.deltaTime;
-	    rigidBody.angularVelocity -= rigidBody.angularVelocity.normalized*autoBrakingSpeed;
+	    rigidBody.angularVelocity -= rigidBody.angularVelocity.normalized*autoBrakingSpeed;*/
 	}
 }
