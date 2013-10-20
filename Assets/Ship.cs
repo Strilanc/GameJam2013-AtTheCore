@@ -25,7 +25,10 @@ public class Ship : MonoBehaviour {
 	public AudioSource engine;
 	public GameObject normalCam;
 	public GameObject occulusCam;
-
+	
+	public Animator stick;
+	public float pitch;
+	public float yaw;
     private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
 	void Start () {
 	    this.rigidbody.inertiaTensor *= 5;
@@ -33,6 +36,7 @@ public class Ship : MonoBehaviour {
 			occulusCam.SetActive(false);
 			normalCam.SetActive(true);
 		}
+		
     }
 
     void FixedUpdate() {
@@ -40,6 +44,9 @@ public class Ship : MonoBehaviour {
         var pitchInput = Input.GetAxis("Vertical");
         var rollInput = Input.GetAxis("Roll");
         
+		stick.SetFloat("Pitch",pitchInput);
+		stick.SetFloat("Yaw",yawInput);
+		
         var angularThrust = default(Vector3);
         angularThrust += transform.up * yawInput;
         angularThrust += transform.right * pitchInput;
@@ -52,7 +59,8 @@ public class Ship : MonoBehaviour {
         thrustVector += transform.forward.normalized * inputForwardBackThrust;
         thrustVector += inputLeftRightThrust * -transform.right;
         thrustVector += inputUpDownThrust * transform.up;
-
+		
+		
         var rigidBody = GetComponent<Rigidbody>();
 
         if (inputForwardBackThrust != 0) {
