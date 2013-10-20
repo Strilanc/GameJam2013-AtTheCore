@@ -10,6 +10,7 @@ public class MetaData : MonoBehaviour {
 	public GameObject gameObj;
 	public bool isActive = false;
 	public Client client;
+	public bool toBeDeleted;
 	// Use this for initialization
 	
 	public int dirty = 0;
@@ -23,6 +24,7 @@ public class MetaData : MonoBehaviour {
 		
 		// reset if needed.
 		if( Interlocked.CompareExchange(ref dirty, 0, 1) == 1)	{
+//			Debug.Log ("UPDATE$$$" + client.prefab + item.uid + " "+ gameObj.transform.position.x + " " + transform.position.x + " "+ item.position.x );
 			transform.position =  item.position;
 			velocity = item.velocity;
 		}
@@ -33,12 +35,16 @@ public class MetaData : MonoBehaviour {
 		}
 
 		transform.Translate(velocity * Time.deltaTime);
+		
+		//Debug.Log("RVR:" + transform.position.x + " " +item.position.x + " " + client.prefab);
 	}
+	
 	void saveDataToDataModel() {
 		DataItem dm = new DataItem();
-		dm.did = uid;
+		dm.uid = uid;
 		dm.position = gameObj.transform.position;
 		dm.velocity = velocity;
+		
 		
 		dataModel.UpdateItem(dm);
 	}
@@ -50,7 +56,7 @@ public class MetaData : MonoBehaviour {
 		DataItem d;
 		if(Input.anyKeyDown){
 			d = dataModel.GetItem(this);
-		
+			Debug.Log ("PREL-- X:" + d.velocity.x +" Y:"+ d.velocity.y );
 			if (Input.GetKeyDown (KeyCode.W)){
 				d.velocity.y += dV;
 			}else if(Input.GetKeyDown (KeyCode.S)){
@@ -60,8 +66,13 @@ public class MetaData : MonoBehaviour {
 			}else if(Input.GetKeyDown (KeyCode.A)){
 				d.velocity.x += -dV;	
 			}
-		
+			Debug.Log ("POST-- X:" + d.velocity.x +" Y:"+ d.velocity.y );
 			Debug.Log ("PINTPU");
+			DataItem di = new DataItem();
+			di.uid = d.uid;
+			di.position = d.position;
+			di.velocity = d.velocity;
+			dataModel.UpdateItem(di);
 			saveDataToDataModel();
 		}
 	}

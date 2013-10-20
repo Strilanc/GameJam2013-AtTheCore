@@ -2,6 +2,7 @@
 using System.Collections;
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 
 public struct byteArrayMetaData  {
@@ -19,6 +20,8 @@ public class SyncEngine : MonoBehaviour, DataDelegate {
 	
 	public Client client;
 	
+	public int expectedNewId =0;
+	
 	void Start(){
 		Debug.Log ("START"); 
 		connection = new UdpAsyncConnection();
@@ -27,19 +30,28 @@ public class SyncEngine : MonoBehaviour, DataDelegate {
 	}
 
 	public void syncRemotely(DataItem dataItem){
-		Debug.Log("LocalChange" + dataItem.velocity);
+		Debug.Log("LocalChange" + dataItem.uid);
 		byteArrayMetaData bamd = new byteArrayMetaData();
 		pack(dataItem, ref bamd);
 		
+		Debug.Log ("SyncRemote: " + dataModel.client.prefab +" "+ dataItem.uid + " "+dataItem.position.x);
 		connection.sendData(bamd);
 	}
 	public void syncLocally(DataItem c){
-		dataModel._LocalUpdateItem (c);
+		if( dataModel.uidObjectMap.ContainsKey(c.uid) == false){
+			Debug.Log ("!!QQ NEW " + c.uid);
+			dataModel.addItem(c);
+			expectedNewId = c.uid+1;
+		
+		}else{
+			Debug.Log ("!!QQ OLD" + c.uid + " " +dataModel.client.prefab + " " + c.position.x);
+			dataModel._LocalUpdateItem (c);
+		}
 	}
 	
 	
 	public void ProcessBytes(byte[] bytes, int byteSize){
-		Debug.Log("SYNC");
+		Debug.Log("SYNC IN "  + dataModel.client.prefab);
 	
 		try {
 		MemoryStream memStream = new MemoryStream(bytes, false);
@@ -47,7 +59,7 @@ public class SyncEngine : MonoBehaviour, DataDelegate {
 		Debug.Log ("PLN: 1" );
 		
 		var item = new DataItem ();
-		item.did = br.ReadInt32 ();
+		item.uid = br.ReadInt32 ();
 		item.position.x = br.ReadSingle();
 		item.position.y = br.ReadSingle();
 	    item.position.z = br.ReadSingle();
@@ -75,7 +87,9 @@ public class SyncEngine : MonoBehaviour, DataDelegate {
 		MemoryStream memStream = new MemoryStream(buffer, true);
 		BinaryWriter bw = new BinaryWriter(memStream);
 		
-		bw.Write(c.did);
+		Debug.Log (dataModel.client.prefab);
+		
+		bw.Write(c.uid);
 		bw.Write(c.position.x);
 		bw.Write(c.position.y);
 		bw.Write(c.position.z);
