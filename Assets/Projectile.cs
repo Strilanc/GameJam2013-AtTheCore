@@ -11,4 +11,8 @@ public class Projectile : MonoBehaviour {
 	public void Start(){
 		StartCoroutine(LifeCycle());
 	}
+	
+	public void OnCollisionEnter(Collision collsion){
+		Destroy(gameObject);
+	}
 }
