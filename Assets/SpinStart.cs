@@ -5,7 +5,7 @@ public class SpinStart : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-	    rigidbody.angularVelocity += new Vector3(7, 0, 0);
+	    rigidbody.angularVelocity += new Vector3(0.5f, 0, 0);
 	    rigidbody.inertiaTensor *= 500;
 	}
 	
