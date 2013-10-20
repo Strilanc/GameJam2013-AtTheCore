@@ -33,6 +33,7 @@ public class Ship : MonoBehaviour {
 	public Animator stick;
 	public float pitch;
 	public float yaw;
+    private float gunCooldown = 0;
 	
 	public Gun gun;
 	
@@ -47,12 +48,15 @@ public class Ship : MonoBehaviour {
     }
 
     void FixedUpdate() {
-		
-		if(gun != null && Input.GetKeyDown(KeyCode.JoystickButton16) || Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKey(KeyCode.Return)){
+
+        gunCooldown -= Time.deltaTime;
+        if (gunCooldown <= 0 && gun != null && Input.GetKey(KeyCode.JoystickButton2) || Input.GetKey(KeyCode.Return)) {
 			gun.shoot = true;
-		}else {
+            gunCooldown += 0.1f;
+        }else {
 			gun.shoot = false;
 		}
+        gunCooldown = Mathf.Max(gunCooldown, 0);
 		
         var yawInput = Input.GetAxis("Horizontal");
         var pitchInput = Input.GetAxis("Vertical");
@@ -142,7 +146,7 @@ public class Ship : MonoBehaviour {
         EngineRightForeward.emissionRate = emissionRateForOutput(outputAngularThrustUpDown - outputThrustForwardBack);
         EngineRightBackward.emissionRate = emissionRateForOutput(-outputAngularThrustUpDown + outputThrustForwardBack);
 
-        var t = transform.position - thrustVector / 5;
+        var t = transform.position - thrustVector / 10 + transform.up * 0.4f + transform.forward * 0.05f;
         var q = transform.rotation * Quaternion.AngleAxis(-angularThrust.magnitude * 10, angularThrust.normalized);
         var lambda = 1 - Mathf.Pow(0.1f, Time.deltaTime);
         Head.transform.position = Vector3.Lerp(Head.transform.position, t, lambda);
@@ -151,7 +155,7 @@ public class Ship : MonoBehaviour {
 
         var xc = Mathf.Clamp(Vector3.Dot(transform.forward, -transform.position.normalized), 0, 1);
         var zc = xc * xc / 100;
-        xc *= xc * 5;
+        xc *= xc * 2;
         var yc = Mathf.Clamp(Vector3.Dot(transform.forward, transform.position.normalized), 0, 1);
         yc *= yc / 4;
         normalCam.GetComponent<Bloom>().bloomIntensity = xc;

@@ -17,8 +17,9 @@ public class Gun : MonoBehaviour {
 		
 		if(shoot){
 			var go = (GameObject)Instantiate(projectile,transform.position,transform.rotation);
-			go.rigidbody.velocity = transform.parent.rigidbody.velocity +transform.forward*1000;
+			go.rigidbody.velocity = transform.parent.rigidbody.velocity +transform.forward*250;
 		}
 		previous = shoot;
-	}
+        shoot = false;
+    }
 }
