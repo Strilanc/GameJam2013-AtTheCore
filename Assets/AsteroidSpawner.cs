@@ -4,7 +4,7 @@ using System.Collections;
 
 public class AsteroidSpawner : MonoBehaviour {
     private float nextSpawn = 0.0f;
-    public GameObject ThingToInstantiate;
+    public List<GameObject> ThingToInstantiate;
     public Ship Ship;
     private readonly List<GameObject> _asteroids = new List<GameObject>(); 
 	// Use this for initialization
@@ -14,13 +14,7 @@ public class AsteroidSpawner : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	    var vel = Ship.rigidbody.velocity;
-	    var pos = Ship.transform.position;
-	    var antiVel = Mathf.Clamp(Mathf.Lerp(1000, 0, pos.magnitude/1000), 0, 1000) * pos.normalized;
-	    var dragVel = vel - antiVel;
-	    var sweptVolume = dragVel.magnitude*Time.deltaTime;
-
-        nextSpawn -= sweptVolume;
+        nextSpawn -= Time.deltaTime;
 
         foreach (var a in _asteroids.ToArray()) {
             if ((a.transform.position - Ship.transform.position).magnitude > 5000) {
@@ -28,19 +22,28 @@ public class AsteroidSpawner : MonoBehaviour {
                 _asteroids.Remove(a);
             }
         }
-        while (nextSpawn < 0 && _asteroids.Count < 100) {
-            nextSpawn += Random.Range(0f, 100f);
+        while (nextSpawn < 0 && _asteroids.Count < 1000) {
+            nextSpawn += Random.Range(0f, 0.1f);
 
-            var spawnDir = dragVel.normalized * 1000;
-            var xx = Vector3.Cross(Vector3.up, spawnDir).normalized;
-            if (xx.magnitude < 0.001) xx = Vector3.Cross(Vector3.forward, spawnDir).normalized;
-            if (xx.magnitude < 0.001) xx = Vector3.Cross(Vector3.right, spawnDir).normalized;
-            var yy = Vector3.Cross(Vector3.up, xx).normalized;
+            Vector3 pos;
+            int i = 0;
+            do {
+                var spawnDir = -Ship.transform.position.normalized;
+                var xx = Vector3.Cross(Vector3.up, spawnDir).normalized;
+                if (xx.magnitude < 0.001) xx = Vector3.Cross(Vector3.forward, spawnDir).normalized;
+                if (xx.magnitude < 0.001) xx = Vector3.Cross(Vector3.right, spawnDir).normalized;
+                var yy = Vector3.Cross(spawnDir, xx).normalized;
 
-            var v1 = spawnDir + xx*Random.Range(0f, 1000f) + yy*Random.Range(0f, 1000f);
-            var x = (GameObject)Instantiate(ThingToInstantiate, Ship.transform.position + v1.normalized*1000f, Quaternion.identity);
+                var v1 = spawnDir + xx*Random.Range(0f, 1f) + yy*Random.Range(0f, 1f);
+                pos = Ship.transform.position + v1.normalized*1000f;
+                i += 1;
+            } while (Physics.CheckSphere(pos, 200) && i < 10);
+            if (i == 10) continue;
+            var t = Random.Range(0, ThingToInstantiate.Count);
+            var x = (GameObject)Instantiate(ThingToInstantiate[t], pos, Quaternion.identity);
             var r = x.GetComponent<Rigidbody>();
-            r.velocity = antiVel.normalized*5 + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+            r.transform.localScale *= Random.Range(0.5f, 1.5f);
+            r.velocity = r.transform.position.normalized*5 + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             r.angularVelocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             _asteroids.Add(x);
         }
