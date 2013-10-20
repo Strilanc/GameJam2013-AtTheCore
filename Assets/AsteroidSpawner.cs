@@ -36,6 +36,14 @@ public class AsteroidSpawner : MonoBehaviour {
 
                 var v1 = spawnDir + xx*Random.Range(0f, 1f) + yy*Random.Range(0f, 1f);
                 pos = Ship.transform.position + v1.normalized*1000f;
+
+                if (Random.Range(0, 1) == 0) {
+                    var a1 = Random.Range(0f, 2*Mathf.PI);
+                    var a2 = Random.Range(-Mathf.PI/2, Mathf.PI);
+                    var v = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+                    pos = Ship.transform.position + v.normalized*1000;
+                }
+
                 i += 1;
             } while (Physics.CheckSphere(pos, 200) && i < 10);
             if (i == 10) continue;
