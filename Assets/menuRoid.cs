@@ -12,6 +12,7 @@ public class menuRoid : MonoBehaviour {
 	public float minUp = -5.0f;
 	public float maxUp = 5.0f;
 	public float ups;
+	public MenuSpawner spawner;
 	// Use this for initialization
 	void Start () {
 		rand1 = Random.Range(rotateSpeedMin, rotateSpeedMax);
@@ -30,8 +31,10 @@ public class menuRoid : MonoBehaviour {
 		transform.Rotate(Vector3.right * Time.deltaTime * rand1);
 		transform.Rotate(Vector3.up * Time.deltaTime * rand2);
 		
-		if (transform.position.x > 1500 || transform.position.x < -1500 || transform.position.z < 0){
+		if (transform.position.x > 1500 || transform.position.x < -1500 || transform.position.z < 0 || transform.position.y > 1500 || transform.position.y < -1500){
 			Destroy(gameObject);
+			spawner.asteroidCount--;
+			Debug.Log (name + "Got Destroyed");
 		}
 	}
 }

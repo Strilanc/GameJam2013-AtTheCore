@@ -5,7 +5,6 @@ using System.Collections;
 using Random = UnityEngine.Random;
 
 public class Ship : MonoBehaviour {
-    public GameObject SpeedStreak;
     public GameObject Head;
     public ParticleSystem EngineLeftDownward;
     public ParticleSystem EngineLeftUpward;
@@ -21,25 +20,47 @@ public class Ship : MonoBehaviour {
 
     public ParticleSystem EngineBottomForeward;
     public ParticleSystem EngineBottomBackward;
+
+    public List<Material> AsteroidMaterials; 
 	
 	public AudioSource audioSource;
 	public AudioSource engine;
 	public GameObject normalCam;
-	public GameObject occulusCam;
-
-    private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
+    public GameObject occulusCam;
+    public GameObject occulusCam_Right;
+    public GameObject occulusCam_Left;
+	
+	public Animator stick;
+	public float pitch;
+	public float yaw;
+	
+	public Gun gun;
+	
 	void Start () {
+		
+	    this.rigidbody.inertiaTensor *= 5;
 		if(!OVRDevice.IsSensorPresent(0)){
 			occulusCam.SetActive(false);
 			normalCam.SetActive(true);
 		}
+		
     }
 
     void FixedUpdate() {
+		
+		if(gun != null && Input.GetKeyDown(KeyCode.JoystickButton16) || Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKey(KeyCode.Return)){
+			gun.shoot = true;
+		}else {
+			gun.shoot = false;
+		}
+		
         var yawInput = Input.GetAxis("Horizontal");
         var pitchInput = Input.GetAxis("Vertical");
         var rollInput = Input.GetAxis("Roll");
         
+		stick.SetFloat("Pitch",pitchInput);
+		stick.SetFloat("Yaw",yawInput);
+		
         var angularThrust = default(Vector3);
         angularThrust += transform.up * yawInput;
         angularThrust += transform.right * pitchInput;
@@ -52,7 +73,8 @@ public class Ship : MonoBehaviour {
         thrustVector += transform.forward.normalized * inputForwardBackThrust;
         thrustVector += inputLeftRightThrust * -transform.right;
         thrustVector += inputUpDownThrust * transform.up;
-
+		
+		
         var rigidBody = GetComponent<Rigidbody>();
 
         if (inputForwardBackThrust != 0) {
@@ -65,14 +87,13 @@ public class Ship : MonoBehaviour {
         MakeSpeedStreak();
 
         var useBrakes = Input.GetKey(KeyCode.Joystick1Button1);
-        var brakesPlus = useBrakes ? 100f : 0;
         const float enginePower = 50f;
         const float rotationalPower = 2f;
         var brakingFactor = useBrakes ? 1f : 0.5f;
-        var rotationalBrakingFactor = useBrakes ? 1f : 0.5f;
+        var rotationalBrakingFactor = useBrakes ? 0.9f : 0.5f;
 
         // rotation compensation
-        if (angularThrust.magnitude < 0.1) {
+        if (angularThrust.magnitude < 0.1 || useBrakes) {
             var glide = rigidBody.angularVelocity;
             var brakeThrustVector = -glide.normalized * rotationalBrakingFactor;
             var velocityAfterBraking = rigidBody.angularVelocity + brakeThrustVector * rotationalPower * Time.deltaTime;
@@ -82,7 +103,7 @@ public class Ship : MonoBehaviour {
         }
         rigidBody.angularVelocity += angularThrust*rotationalPower*Time.deltaTime;
 
-        if (thrustVector.magnitude < 0.1) {
+        if (thrustVector.magnitude < 0.1 || useBrakes) {
             var glide = rigidBody.velocity - RestAtPoint(transform.position);
             var brakeThrustVector = -glide.normalized * brakingFactor;
             var glideAfterBraking = glide + brakeThrustVector*enginePower*Time.deltaTime;
@@ -127,27 +148,31 @@ public class Ship : MonoBehaviour {
         Head.transform.position = Vector3.Lerp(Head.transform.position, t, lambda);
         Head.transform.rotation = Quaternion.Slerp(Head.transform.rotation, q, lambda);
 		engine.pitch = thrustVector.magnitude+0.5f;
+
+        var xc = Mathf.Clamp(Vector3.Dot(transform.forward, -transform.position.normalized), 0, 1);
+        var zc = xc * xc / 100;
+        xc *= xc * 5;
+        var yc = Mathf.Clamp(Vector3.Dot(transform.forward, transform.position.normalized), 0, 1);
+        yc *= yc / 4;
+        normalCam.GetComponent<Bloom>().bloomIntensity = xc;
+        occulusCam_Right.GetComponent<Bloom>().bloomIntensity = xc;
+        occulusCam_Left.GetComponent<Bloom>().bloomIntensity = xc;
+        //normalCam.GetComponent<NoiseEffect>().grainIntensityMax = yc;
+        //occulusCam_Right.GetComponent<NoiseEffect>().grainIntensityMax = yc;
+        //occulusCam_Left.GetComponent<NoiseEffect>().grainIntensityMax = yc;
+
+        foreach (var m in AsteroidMaterials) {
+            m.SetColor("_OutlineColor", new Color(255, 255, 255, Mathf.Clamp(zc*50, 0, 1)));
+            m.SetFloat("_Outline", zc);
+        }
     }
     private static Vector3 RestAtPoint(Vector3 position) {
-        return -position.normalized*25;
+        return default(Vector3);
     }
     void MakeSpeedStreak() {
-        foreach (var s in _speedStreak.ToArray()) {
-            if ((s.transform.position - transform.position).sqrMagnitude > 100 * 100) {
-                DestroyObject(s.gameObject);
-                _speedStreak.Remove(s);
-            } else if (s.GetComponent<SpeedStreak>().life > 30) {
-                DestroyObject(s.gameObject);
-                _speedStreak.Remove(s);
-            }
-        }
-
-        while (_speedStreak.Count < 500) {
-            var r = transform.position + new Vector3(Random.Range(-1, 1f), Random.Range(-1, 1f), Random.Range(-1, 1f)) * 100;
-            var g = (GameObject)Instantiate(SpeedStreak, r, Quaternion.identity);
-            g.rigidbody.velocity = RestAtPoint(g.transform.position);
-            _speedStreak.Add(g);
-        }
+        this.GetComponent<ParticleSystem>().transform.position = this.transform.position;
+        this.GetComponent<ParticleSystem>().emissionRate = this.rigidbody.velocity.magnitude*25;
+        this.GetComponent<ParticleSystem>().startLifetime = Mathf.Clamp(this.rigidbody.velocity.magnitude, 0.01f, 1);
     }
 	
 	public void OnCollisonEnter(Collision other){
