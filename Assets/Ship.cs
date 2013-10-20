@@ -155,7 +155,7 @@ public class Ship : MonoBehaviour {
 
         var xc = Mathf.Clamp(Vector3.Dot(transform.forward, -transform.position.normalized), 0, 1);
         var zc = xc * xc / 100;
-        xc *= xc * 5;
+        xc *= xc * 2;
         var yc = Mathf.Clamp(Vector3.Dot(transform.forward, transform.position.normalized), 0, 1);
         yc *= yc / 4;
         normalCam.GetComponent<Bloom>().bloomIntensity = xc;
