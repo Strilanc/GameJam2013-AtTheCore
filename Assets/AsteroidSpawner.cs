@@ -42,6 +42,8 @@ public class AsteroidSpawner : MonoBehaviour {
             var t = Random.Range(0, ThingToInstantiate.Count);
             var x = (GameObject)Instantiate(ThingToInstantiate[t], pos, Quaternion.identity);
             var r = x.GetComponent<Rigidbody>();
+            r.interpolation = RigidbodyInterpolation.Interpolate;
+            r.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
             x.transform.localScale *= Random.Range(0.5f, 1.5f);
             r.velocity = r.transform.position.normalized*5 + new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
             r.angularVelocity = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
