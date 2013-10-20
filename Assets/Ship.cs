@@ -20,16 +20,19 @@ public class Ship : MonoBehaviour {
 
     public ParticleSystem EngineBottomForeward;
     public ParticleSystem EngineBottomBackward;
+
+    public List<Material> AsteroidMaterials; 
 	
 	public AudioSource audioSource;
 	public AudioSource engine;
 	public GameObject normalCam;
-	public GameObject occulusCam;
+    public GameObject occulusCam;
+    public GameObject occulusCam_Right;
+    public GameObject occulusCam_Left;
 	
 	public Animator stick;
 	public float pitch;
 	public float yaw;
-    private readonly List<GameObject> _speedStreak = new List<GameObject>(); 
 	void Start () {
 	    this.rigidbody.inertiaTensor *= 5;
 		if(!OVRDevice.IsSensorPresent(0)){
@@ -134,6 +137,23 @@ public class Ship : MonoBehaviour {
         Head.transform.position = Vector3.Lerp(Head.transform.position, t, lambda);
         Head.transform.rotation = Quaternion.Slerp(Head.transform.rotation, q, lambda);
 		engine.pitch = thrustVector.magnitude+0.5f;
+
+        var xc = Mathf.Clamp(Vector3.Dot(transform.forward, -transform.position.normalized), 0, 1);
+        var zc = xc * xc / 100;
+        xc *= xc * 5;
+        var yc = Mathf.Clamp(Vector3.Dot(transform.forward, transform.position.normalized), 0, 1);
+        yc *= yc / 4;
+        normalCam.GetComponent<Bloom>().bloomIntensity = xc;
+        occulusCam_Right.GetComponent<Bloom>().bloomIntensity = xc;
+        occulusCam_Left.GetComponent<Bloom>().bloomIntensity = xc;
+        //normalCam.GetComponent<NoiseEffect>().grainIntensityMax = yc;
+        //occulusCam_Right.GetComponent<NoiseEffect>().grainIntensityMax = yc;
+        //occulusCam_Left.GetComponent<NoiseEffect>().grainIntensityMax = yc;
+
+        foreach (var m in AsteroidMaterials) {
+            m.SetColor("_OutlineColor", new Color(255, 255, 255, Mathf.Clamp(zc*50, 0, 1)));
+            m.SetFloat("_Outline", zc);
+        }
     }
     private static Vector3 RestAtPoint(Vector3 position) {
         return default(Vector3);
