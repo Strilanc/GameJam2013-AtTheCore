@@ -3,7 +3,12 @@ using System.Collections;
 
 public class Projectile : MonoBehaviour {
 	
-	void Update () {
-		transform.Translate(transform.forward *1000*Time.deltaTime);
+	public IEnumerator LifeCycle(){
+		yield return new WaitForSeconds(5);
+		Destroy(gameObject);
+	}
+	
+	public void Start(){
+		StartCoroutine(LifeCycle());
 	}
 }

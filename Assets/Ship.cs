@@ -33,7 +33,11 @@ public class Ship : MonoBehaviour {
 	public Animator stick;
 	public float pitch;
 	public float yaw;
+	
+	public Gun gun;
+	
 	void Start () {
+		
 	    this.rigidbody.inertiaTensor *= 5;
 		if(!OVRDevice.IsSensorPresent(0)){
 			occulusCam.SetActive(false);
@@ -43,6 +47,13 @@ public class Ship : MonoBehaviour {
     }
 
     void FixedUpdate() {
+		
+		if(gun != null && Input.GetKeyDown(KeyCode.JoystickButton16) || Input.GetKeyDown(KeyCode.JoystickButton0) || Input.GetKey(KeyCode.Return)){
+			gun.shoot = true;
+		}else {
+			gun.shoot = false;
+		}
+		
         var yawInput = Input.GetAxis("Horizontal");
         var pitchInput = Input.GetAxis("Vertical");
         var rollInput = Input.GetAxis("Roll");
