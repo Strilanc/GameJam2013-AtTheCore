@@ -18,6 +18,9 @@ public class Ship : MonoBehaviour {
     public ParticleSystem EngineRightForeward;
     public ParticleSystem EngineRightBackward;
 
+    public AudioSource BattleAudio;
+    public AudioSource BackgroundAudio;
+
     public ParticleSystem EngineBottomForeward;
     public ParticleSystem EngineBottomBackward;
 
@@ -29,13 +32,12 @@ public class Ship : MonoBehaviour {
     public GameObject occulusCam;
     public GameObject occulusCam_Right;
     public GameObject occulusCam_Left;
-	
+
+    private bool isPlayingBattle;
+
 	public Animator stick;
 	public float pitch;
 	public float yaw;
-    private float gunCooldown = 0;
-	
-	public Gun gun;
 	
 	void Start () {
 		
@@ -49,14 +51,7 @@ public class Ship : MonoBehaviour {
 
     void FixedUpdate() {
 
-        gunCooldown -= Time.deltaTime;
-        if (gunCooldown <= 0 && gun != null && Input.GetKey(KeyCode.JoystickButton2) || Input.GetKey(KeyCode.Return)) {
-			gun.shoot = true;
-            gunCooldown += 0.1f;
-        }else {
-			gun.shoot = false;
-		}
-        gunCooldown = Mathf.Max(gunCooldown, 0);
+
 		
         var yawInput = Input.GetAxis("Horizontal");
         var pitchInput = Input.GetAxis("Vertical");
@@ -177,6 +172,24 @@ public class Ship : MonoBehaviour {
         this.GetComponent<ParticleSystem>().transform.position = this.transform.position;
         this.GetComponent<ParticleSystem>().emissionRate = this.rigidbody.velocity.magnitude*25;
         this.GetComponent<ParticleSystem>().startLifetime = Mathf.Clamp(this.rigidbody.velocity.magnitude, 0.01f, 1);
+
+        var switchRadius = isPlayingBattle ? 2200 : 1800;
+        var shouldPlayBattle = transform.position.magnitude < switchRadius;
+
+        if (shouldPlayBattle != isPlayingBattle) {
+            if (shouldPlayBattle) {
+            BattleAudio.Stop();
+                BattleAudio.Play();
+                BackgroundAudio.volume = 0;
+            } else {
+                BackgroundAudio.Stop();
+                BackgroundAudio.Play();
+                BackgroundAudio.volume = 0;
+            }
+            isPlayingBattle = shouldPlayBattle;
+        }
+        BattleAudio.volume = Mathf.Lerp(BattleAudio.volume, shouldPlayBattle ? 1 : 0, 0.05f);
+        BackgroundAudio.volume = Mathf.Lerp(BackgroundAudio.volume, shouldPlayBattle ? 0 : 1, 0.05f);
     }
 	
 	public void OnCollisonEnter(Collision other){
