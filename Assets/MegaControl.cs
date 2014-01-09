@@ -12,9 +12,19 @@ public class MegaControl : MonoBehaviour {
 		}
 	}
 	
+	public bool Started{
+		get{
+			return Input.GetKey(KeyCode.Space) ||
+				Input.GetKey(KeyCode.Joystick1Button0) || 
+					Input.GetKey(KeyCode.Joystick1Button16);
+		}
+	}
+	
 	void Update () {
 		
-		
+		if(Started){
+			Application.LoadLevel("Scene1");
+		}
 		
 		Ray ray = Camera.main.ScreenPointToRay(PositionAtDepth);
 		

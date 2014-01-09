@@ -41,21 +41,30 @@ public class Ship : MonoBehaviour {
 	
 	void Start () {
 		
-	    this.rigidbody.inertiaTensor *= 5;
+	    this.rigidbody.inertiaTensor *= 25;
 		if(!OVRDevice.IsSensorPresent(0)){
 			occulusCam.SetActive(false);
 			normalCam.SetActive(true);
 		}
 		
     }
-
+	
+	public bool ForwardThrustInput{
+		get{
+			return Input.GetKey(KeyCode.Space) ||
+				Input.GetKey(KeyCode.Joystick1Button0) || 
+					Input.GetKey(KeyCode.Joystick1Button16);
+		}
+	}
+	
     void FixedUpdate() {
-
-
+		
+		//check to see if its a mac otherwise its windows
+		bool mac  = Application.platform == RuntimePlatform.OSXPlayer;
 		
         var yawInput = Input.GetAxis("Horizontal");
         var pitchInput = Input.GetAxis("Vertical");
-        var rollInput = Input.GetAxis("Roll");
+        var rollInput = Input.GetAxis(mac?"Roll_MAC":"Roll");
         
 		stick.SetFloat("Pitch",pitchInput);
 		stick.SetFloat("Yaw",yawInput);
@@ -65,9 +74,9 @@ public class Ship : MonoBehaviour {
         angularThrust += transform.right * pitchInput;
         angularThrust += transform.forward * rollInput;
 
-        var inputLeftRightThrust = Input.GetAxis("LeftRightThrust");
-        var inputUpDownThrust = Input.GetAxis("UpDownThrust");
-        var inputForwardBackThrust = Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button0) ? 1 : 0f;
+        var inputLeftRightThrust = Input.GetAxis(mac ? "LeftRightThrust_MAC" : "LeftRightThrust");
+        var inputUpDownThrust = Input.GetAxis(mac ? "UpDownThrust_MAC" : "UpDownThrust");
+        var inputForwardBackThrust = ForwardThrustInput ? 1 : 0f;
         var thrustVector = default(Vector3);
         thrustVector += transform.forward.normalized * inputForwardBackThrust;
         thrustVector += inputLeftRightThrust * -transform.right;
